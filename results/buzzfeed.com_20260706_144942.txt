@@ -1,0 +1,8 @@
+.htaccessXzCByypM.buzzfeed.com
+blog.buzzfeed.com
+news.buzzfeed.com
+stage.buzzfeed.com
+intranet.buzzfeed.com
+shop.buzzfeed.com
+data.buzzfeed.com
+img.buzzfeed.com
