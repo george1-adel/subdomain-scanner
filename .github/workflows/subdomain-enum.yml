@@ -57,7 +57,7 @@ jobs:
           puredns bruteforce wordlist.txt "$TARGET" \
             --resolvers resolvers.txt \
             --write results.txt \
-            --write-wildcard wildcard.txt
+            --write-wildcards wildcard.txt
 
       - name: Show summary
         run: |
