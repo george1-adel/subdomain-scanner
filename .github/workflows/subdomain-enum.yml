@@ -58,6 +58,8 @@ jobs:
           TARGET="${{ github.event.inputs.target }}"
           puredns bruteforce wordlist.txt "$TARGET" \
             --resolvers resolvers.txt \
+            --rate-limit 200 \
+            --rate-limit-trusted 100 \
             --write results.txt \
             --write-wildcards wildcard.txt
 
