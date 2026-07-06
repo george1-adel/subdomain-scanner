@@ -60,12 +60,13 @@ jobs:
         run: |
           TARGET="${{ github.event.inputs.target }}"
           SAFE_NAME=$(echo "$TARGET" | sed 's/[^a-zA-Z0-9.-]/_/g')
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           mkdir -p results
           touch results.txt
-          cp results.txt "results/${SAFE_NAME}.txt"
+          cp results.txt "results/${SAFE_NAME}_${TIMESTAMP}.txt"
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add "results/${SAFE_NAME}.txt"
+          git add "results/${SAFE_NAME}_${TIMESTAMP}.txt"
           git diff --quiet && git diff --staged --quiet || \
             git commit -m "Results for $TARGET using ${{ github.event.inputs.wordlist }}"
           git push
