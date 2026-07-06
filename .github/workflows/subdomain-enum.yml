@@ -1,0 +1,71 @@
+name: Subdomain Brute Force
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Target domain (e.g., example.com)'
+        required: true
+      wordlist:
+        description: 'Wordlist'
+        required: true
+        default: 'best-dns-wordlist'
+        type: choice
+        options:
+          - best-dns-wordlist
+          - 2m-subdomains
+
+jobs:
+  enumerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download wordlist
+        run: |
+          if [ "${{ github.event.inputs.wordlist }}" = "best-dns-wordlist" ]; then
+            URL="https://wordlists-cdn.assetnote.io/data/manual/best-dns-wordlist.txt"
+          else
+            URL="https://wordlists-cdn.assetnote.io/data/manual/2m-subdomains.txt"
+          fi
+          echo "Downloading: $URL"
+          wget -O wordlist.txt "$URL"
+          echo "Lines: $(wc -l < wordlist.txt)"
+
+      - name: Install puredns
+        run: |
+          wget -q https://github.com/d3mondev/puredns/releases/latest/download/puredns-linux-amd64.zip
+          unzip -q puredns-linux-amd64.zip
+          chmod +x puredns
+          sudo mv puredns /usr/local/bin/
+          puredns version
+
+      - name: Download public resolvers
+        run: |
+          wget -q -O resolvers.txt https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt
+
+      - name: Run puredns bruteforce
+        run: |
+          TARGET="${{ github.event.inputs.target }}"
+          puredns bruteforce wordlist.txt "$TARGET" \
+            --resolvers resolvers.txt \
+            --write results.txt \
+            --write-wildcard wildcard.txt
+
+      - name: Show summary
+        run: |
+          echo "=== Found $(wc -l < results.txt) subdomains ==="
+          cat results.txt
+
+      - name: Save results to repo
+        run: |
+          TARGET="${{ github.event.inputs.target }}"
+          SAFE_NAME=$(echo "$TARGET" | sed 's/[^a-zA-Z0-9.-]/_/g')
+          mkdir -p results
+          cp results.txt "results/${SAFE_NAME}.txt"
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add "results/${SAFE_NAME}.txt"
+          git diff --quiet && git diff --staged --quiet || \
+            git commit -m "Results for $TARGET using ${{ github.event.inputs.wordlist }}"
+          git push
