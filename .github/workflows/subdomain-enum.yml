@@ -36,10 +36,8 @@ jobs:
 
       - name: Install ffuf
         run: |
-          wget -q https://github.com/ffuf/ffuf/releases/latest/download/ffuf_linux_amd64.tar.gz
-          tar -xzf ffuf_linux_amd64.tar.gz
-          chmod +x ffuf
-          sudo mv ffuf /usr/local/bin/
+          go install github.com/ffuf/ffuf/v2@latest
+          sudo mv ~/go/bin/ffuf /usr/local/bin/
 
       - name: Run ffuf subdomain scan
         run: |
