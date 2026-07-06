@@ -60,6 +60,8 @@ jobs:
             --resolvers resolvers.txt \
             --rate-limit 200 \
             --rate-limit-trusted 100 \
+            --skip-validation \
+            --skip-wildcard-filter \
             --write results.txt \
             --write-wildcards wildcard.txt
 
