@@ -51,14 +51,13 @@ jobs:
 
       - name: Download public resolvers
         run: |
-          wget -q -O resolvers.txt https://raw.githubusercontent.com/trickest/resolvers/main/resolvers.txt
-
+          wget -q -O resolvers.txt https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt
+          
       - name: Run puredns bruteforce
         run: |
           TARGET="${{ github.event.inputs.target }}"
           puredns bruteforce wordlist.txt "$TARGET" \
             --resolvers resolvers.txt \
-            --rate-limit 100 \
             --write results.txt \
             --write-wildcards wildcard.txt
 
