@@ -56,7 +56,7 @@ jobs:
       - name: Run puredns bruteforce
         run: |
           TARGET="${{ github.event.inputs.target }}"
-          puredns bruteforce wordlist.txt "$TARGET" \
+          cat wordlist.txt | puredns bruteforce - "$TARGET" \
             --resolvers resolvers.txt \
             --rate-limit 200 \
             --rate-limit-trusted 100 \
@@ -67,14 +67,19 @@ jobs:
 
       - name: Show summary
         run: |
-          echo "=== Found $(wc -l < results.txt) subdomains ==="
-          cat results.txt
+          if [ -f results.txt ] && [ -s results.txt ]; then
+            echo "=== Found $(wc -l < results.txt) subdomains ==="
+            head -20 results.txt
+          else
+            echo "No subdomains found"
+          fi
 
       - name: Save results to repo
         run: |
           TARGET="${{ github.event.inputs.target }}"
           SAFE_NAME=$(echo "$TARGET" | sed 's/[^a-zA-Z0-9.-]/_/g')
           mkdir -p results
+          touch results.txt
           cp results.txt "results/${SAFE_NAME}.txt"
           git config user.name "github-actions"
           git config user.email "actions@github.com"
