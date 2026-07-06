@@ -41,8 +41,8 @@ jobs:
 
       - name: Install puredns
         run: |
-          wget -q https://github.com/d3mondev/puredns/releases/latest/download/puredns-linux-amd64.zip
-          unzip -q puredns-linux-amd64.zip
+          wget -q https://github.com/d3mondev/puredns/releases/latest/download/puredns-Linux-amd64.tgz
+          tar -xzf puredns-Linux-amd64.tgz
           chmod +x puredns
           sudo mv puredns /usr/local/bin/
           puredns version
