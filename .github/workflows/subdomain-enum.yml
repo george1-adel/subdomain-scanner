@@ -45,7 +45,7 @@ jobs:
           tar -xzf puredns-Linux-amd64.tgz
           chmod +x puredns
           sudo mv puredns /usr/local/bin/
-          puredns version
+          puredns --help
 
       - name: Download public resolvers
         run: |
