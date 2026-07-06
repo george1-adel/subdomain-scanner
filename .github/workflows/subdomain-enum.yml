@@ -34,33 +34,18 @@ jobs:
           wget -O wordlist.txt "$URL"
           echo "Lines: $(wc -l < wordlist.txt)"
 
-      - name: Install massdns
+      - name: Install ffuf
         run: |
-          git clone https://github.com/blechschmidt/massdns.git
-          cd massdns
-          make
-          sudo make install
+          wget -q https://github.com/ffuf/ffuf/releases/latest/download/ffuf_linux_amd64.tar.gz
+          tar -xzf ffuf_linux_amd64.tar.gz
+          chmod +x ffuf
+          sudo mv ffuf /usr/local/bin/
 
-      - name: Install puredns
-        run: |
-          wget -q https://github.com/d3mondev/puredns/releases/latest/download/puredns-Linux-amd64.tgz
-          tar -xzf puredns-Linux-amd64.tgz
-          chmod +x puredns
-          sudo mv puredns /usr/local/bin/
-          puredns --help
-
-      - name: Download public resolvers
-        run: |
-          wget -q -O resolvers.txt https://raw.githubusercontent.com/trickest/resolvers/main/resolvers-trusted.txt
-          
-      - name: Run puredns bruteforce
+      - name: Run ffuf subdomain scan
         run: |
           TARGET="${{ github.event.inputs.target }}"
-          cat wordlist.txt | puredns bruteforce - "$TARGET" \
-            --resolvers resolvers.txt \
-            -t 500 \
-            --write results.txt \
-            --write-wildcards wildcard.txt
+          ffuf -w wordlist.txt -u "https://FUZZ.$TARGET" \
+            -mc all -ac -se -t 50 -s 2>/dev/null | sed 's|https://||' > results.txt
 
       - name: Show summary
         run: |
