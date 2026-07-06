@@ -43,7 +43,7 @@ jobs:
         run: |
           TARGET="${{ github.event.inputs.target }}"
           ffuf -w wordlist.txt -u "https://FUZZ.$TARGET" \
-            -mc all -ac -se -t 50 -s 2>/dev/null | sed 's|https://||' > results.txt
+            -mc all -ac -se -t 50 -s 2>/dev/null | sed "s/\$/.$TARGET/" > results.txt
 
       - name: Show summary
         run: |
